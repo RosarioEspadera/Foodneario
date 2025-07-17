@@ -12,11 +12,11 @@ if (token && userEmail) {
 
   actions.appendChild(uploadBtn);
 } else {
-  userInfo.textContent = "You're browsing as a guest.";
+  userInfo.innerHTML = "<h2>You're browsing as a guest.</h2><p>Want to upload your own dish?</p>";
 
-  const menuBtn = document.createElement("button");
-  menuBtn.textContent = "View Menu";
-  menuBtn.onclick = () => window.location.href = "menu.html";
+  const signInBtn = document.createElement("button");
+  signInBtn.textContent = "Sign in with Google";
+  signInBtn.onclick = () => window.location.href = "index.html";
 
-  actions.appendChild(menuBtn);
+  actions.appendChild(signInBtn);
 }
