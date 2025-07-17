@@ -14,18 +14,6 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   const uploader_id = userData.user.id;
 
-  // Get access token for RLS-compliant insert
-  const { data: sessionData } = await supabase.auth.getSession();
-  const token = sessionData?.session?.access_token;
-
-  const supabaseWithAuth = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    global: {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    },
-  });
-
   const form = document.getElementById('uploadForm');
   const submitBtn = form.querySelector('button[type="submit"]');
 
@@ -45,7 +33,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const safeName = file.name.replace(/[^\w.-]/g, '_');
     const filePath = `public/${Date.now()}-${safeName}`;
 
-    const { data: fileData, error: uploadError } = await supabaseWithAuth.storage
+    const { data: fileData, error: uploadError } = await supabase.storage
       .from('dish-images')
       .upload(filePath, file, { upsert: true });
 
@@ -55,11 +43,11 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       return;
     }
 
-    const imageUrl = supabaseWithAuth.storage
+    const imageUrl = supabase.storage
       .from('dish-images')
       .getPublicUrl(filePath).publicUrl;
 
-    const { error: dbError } = await supabaseWithAuth
+    const { error: dbError } = await supabase
       .from('foods')
       .insert([{
         name: data.get('name'),
