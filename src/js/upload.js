@@ -1,9 +1,9 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js';
 
-const supabase = createClient(
-  'https://roqikwfaenwqipdydhwv.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJvcWlrd2ZhZW53cWlwZHlkaHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI2MTYxMzksImV4cCI6MjA2ODE5MjEzOX0.CpUCA3X4bNIjOCtxrdOZ2kciXEHEogukBie9IOlHpno'
-);
+const SUPABASE_URL = 'https://roqikwfaenwqipdydhwv.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJvcWlrd2ZhZW53cWlwZHlkaHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI2MTYxMzksImV4cCI6MjA2ODE5MjEzOX0.CpUCA3X4bNIjOCtxrdOZ2kciXEHEogukBie9IOlHpno';
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 (async () => {
   const { data: userData, error } = await supabase.auth.getUser();
@@ -18,17 +18,13 @@ const supabase = createClient(
   const { data: sessionData } = await supabase.auth.getSession();
   const token = sessionData?.session?.access_token;
 
-  const supabaseWithAuth = createClient(
-    'https://roqikwfaenwqipdydhwv.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJvcWlrd2ZhZW53cWlwZHlkaHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI2MTYxMzksImV4cCI6MjA2ODE5MjEzOX0.CpUCA3X4bNIjOCtxrdOZ2kciXEHEogukBie9IOlHpno',
-    {
-      global: {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+  const supabaseWithAuth = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    global: {
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
-    }
-  );
+    },
+  });
 
   const form = document.getElementById('uploadForm');
   const submitBtn = form.querySelector('button[type="submit"]');
@@ -46,7 +42,6 @@ const supabase = createClient(
       return;
     }
 
-    // Sanitize file name
     const safeName = file.name.replace(/[^\w.-]/g, '_');
     const filePath = `public/${Date.now()}-${safeName}`;
 
@@ -83,9 +78,6 @@ const supabase = createClient(
     showSuccess("Dish uploaded successfully!");
     form.reset();
     submitBtn.disabled = false;
-
-    // Optional redirect
-    // window.location.href = "menu.html";
   });
 })();
 
