@@ -1,8 +1,17 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js';
 
+const token = localStorage.getItem("token");
+
 const supabase = createClient(
   'https://roqikwfaenwqipdydhwv.supabase.co',
-  'your-anon-key-here' // Keep this secured later
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...', // anon key
+  {
+    global: {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+  }
 );
 
 const form = document.getElementById('uploadForm');
