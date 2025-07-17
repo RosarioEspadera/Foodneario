@@ -29,23 +29,16 @@ form, #menuGrid {
   overflow: hidden;
   box-shadow: 0 1px 4px rgba(0,0,0,0.1);
 }
-
-.dish-card img {
+.dish-img {
   width: 100%;
   height: auto;
-  border-radius: 6px;
+  object-fit: cover;
+  border-radius: 8px;
 }
-
 .dish-info {
   margin-top: 10px;
 }
 
-  background: #fff;
-}
-.dish-card img {
-  max-width: 100%;
-  height: auto;
-}
 @media (forced-colors: active) {
   body {
     background-color: Canvas;
