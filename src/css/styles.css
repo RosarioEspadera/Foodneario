@@ -1,1 +1,29 @@
-.
+/* src/css/styles.css */
+body {
+  font-family: sans-serif;
+  margin: 20px;
+  padding: 0;
+  background: #fffbe6;
+}
+
+h1, h2 {
+  color: #5a2b00;
+}
+
+form, #menuGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.dish-card {
+  border: 1px solid #ccc;
+  padding: 10px;
+  background: #fff;
+}
+.dish-card img {
+  max-width: 100%;
+  height: auto;
+}
