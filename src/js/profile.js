@@ -9,9 +9,9 @@ const userInfo = document.getElementById("userInfo");
 const actions = document.getElementById("profileActions");
 
 (async () => {
-  const { data: user, error } = await supabase.auth.getUser();
+  const { data, error } = await supabase.auth.getUser();
 
-  if (error || !user) {
+  if (error || !data?.user) {
     userInfo.innerHTML = `
       <h2>You're browsing as a guest.</h2>
       <p>Want to upload your own dish?</p>
@@ -23,7 +23,7 @@ const actions = document.getElementById("profileActions");
     return;
   }
 
-  const { email, id } = user;
+  const { email, id } = data.user;
   userInfo.textContent = `Signed in as ${email}`;
   localStorage.setItem("user_id", id);
   localStorage.setItem("user_email", email);
@@ -41,3 +41,4 @@ const actions = document.getElementById("profileActions");
   };
   actions.appendChild(logoutBtn);
 })();
+
