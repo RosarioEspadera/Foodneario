@@ -14,7 +14,6 @@
 <body>
   <h1>Welcome to Foodneerio!</h1>
   <button id="loginBtn">Sign in with Google</button>
-<script type="module" src="src/js/login.js"></script>
 
 <button id="guestBtn">Continue as Guest</button>
 <script>
@@ -23,8 +22,8 @@
   });
 </script>
   <script>
-  const email = localStorage.getItem("user_email");
-  if (email) {
+  const { data: userData } = await supabase.auth.getUser();
+if (userData?.user?.email) {
     const btn = document.createElement("button");
     btn.textContent = `Continue as ${email}`;
     btn.onclick = () => {
