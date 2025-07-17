@@ -18,6 +18,7 @@ export function handleCredentialResponse(response) {
   localStorage.setItem("token", token);
 
   // Redirect to upload page
-window.location.href = "../upload.html";
+window.location.href = "https://rosarioespadera.github.io/Foodneario/upload.html";
+
 }
 
