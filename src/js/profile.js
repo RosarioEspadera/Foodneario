@@ -9,15 +9,13 @@ const userInfo = document.getElementById("userInfo");
 const actions = document.getElementById("profileActions");
 
 (async () => {
-  const { data: session, error } = await supabase.auth.getUser();
+  const { data: user, error } = await supabase.auth.getUser();
 
-  if (error || !session?.user) {
-    // Guest UI
+  if (error || !user) {
     userInfo.innerHTML = `
       <h2>You're browsing as a guest.</h2>
       <p>Want to upload your own dish?</p>
     `;
-
     const signInBtn = document.createElement("button");
     signInBtn.textContent = "Sign in with Google";
     signInBtn.onclick = () => window.location.href = "index.html";
@@ -25,9 +23,7 @@ const actions = document.getElementById("profileActions");
     return;
   }
 
-  const { email, id } = session.user;
-
-  // Signed-in UI
+  const { email, id } = user;
   userInfo.textContent = `Signed in as ${email}`;
   localStorage.setItem("user_id", id);
   localStorage.setItem("user_email", email);
