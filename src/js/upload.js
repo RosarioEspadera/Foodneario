@@ -13,6 +13,11 @@ form.addEventListener('submit', async (e) => {
   const data = new FormData(form);
   const file = data.get('image');
 
+    const user_id = localStorage.getItem('user_id');
+  if (!user_id) {
+    alert("Please sign in with Google before uploading.");
+    return;
+  }
   // Upload file to bucket
   const { data: fileData, error: uploadError } = await supabase.storage
     .from('dish-images')
@@ -26,14 +31,15 @@ form.addEventListener('submit', async (e) => {
 
   // Save metadata
   const { error: dbError } = await supabase
-    .from('foods')
-    .insert([{
-      name: data.get('name'),
-      description: data.get('description'),
-      price: parseFloat(data.get('price')),
-      image_url: imageUrl,
-      uploader_id: null // replace with actual user ID if tracked
-    }]);
+  .from('foods')
+  .insert([{
+    name: data.get('name'),
+    description: data.get('description'),
+    price: parseFloat(data.get('price')),
+    image_url: imageUrl,
+    uploader_id: user_id || null
+  }]);
+
 
   if (dbError) return console.error(dbError);
   alert('Dish uploaded successfully!');
