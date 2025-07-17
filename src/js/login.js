@@ -8,6 +8,9 @@ function parseJwt(token) {
   );
   return JSON.parse(jsonPayload);
 }
+const msg = document.createElement("p");
+msg.textContent = `Welcome back, ${email}!`;
+document.body.insertBefore(msg, btn);
 
 export function handleCredentialResponse(response) {
   const token = response.credential;
