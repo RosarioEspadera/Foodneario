@@ -6,7 +6,8 @@ const supabase = createClient(
 );
 
 (async () => {
- const { data: userData, error } = await supabase.auth.getUser();
+const { data: userData } = await supabase.auth.getUser();
+const uploader_id = userData?.user?.id;
 
 if (error || !userData?.user) {
   alert("You're not signed in.");
@@ -66,15 +67,16 @@ const token = (await supabase.auth.getSession()).data.session.access_token;
       .from('dish-images')
       .getPublicUrl(filePath).publicUrl;
 
-    const { error: dbError } = await supabaseWithToken
-      .from('foods')
-      .insert([{
-        name: data.get('name'),
-        description: data.get('description'),
-        price: parseFloat(data.get('price')),
-        image_url: imageUrl,
-        uploader_id: user_id
-      }]);
+   const { error: dbError } = await supabaseWithToken
+  .from('foods')
+  .insert([{
+    name: data.get('name'),
+    description: data.get('description'),
+    price: parseFloat(data.get('price')),
+    image_url: imageUrl,
+    uploader_id: uploader_id
+  }]);
+
 
     if (dbError) {
       showError(`Insert failed: ${dbError.message}`);
