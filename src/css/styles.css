@@ -53,4 +53,23 @@ form, #menuGrid {
     border-color: GrayText;
   }
 }
+.navbar {
+  background-color: #ffe4b5;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.navbar a {
+  text-decoration: none;
+  color: #5a2b00;
+  font-weight: bold;
+}
+
+.navbar a:hover {
+  color: #ff7300;
+}
 
