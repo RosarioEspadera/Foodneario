@@ -29,8 +29,18 @@
     window.location.href = "upload.html";
   });
 </script>
-
-  <script type="module" src="src/js/login.js"></script>
+  <script>
+  const email = localStorage.getItem("user_email");
+  if (email) {
+    const btn = document.createElement("button");
+    btn.textContent = `Continue as ${email}`;
+    btn.onclick = () => {
+      window.location.href = "upload.html";
+    };
+    document.body.appendChild(btn);
+  }
+</script>
 </body>
+  <script type="module" src="src/js/login.js"></script>
 </html>
 
