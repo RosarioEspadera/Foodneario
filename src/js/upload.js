@@ -7,13 +7,28 @@ const supabase = createClient(
 
 (async () => {
   const { data: userData, error } = await supabase.auth.getUser();
-
   if (error || !userData?.user) {
     alert("You're not signed in.");
     return;
   }
 
   const uploader_id = userData.user.id;
+
+  // Get access token for RLS-compliant insert
+  const { data: sessionData } = await supabase.auth.getSession();
+  const token = sessionData?.session?.access_token;
+
+  const supabaseWithAuth = createClient(
+    'https://roqikwfaenwqipdydhwv.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJvcWlrd2ZhZW53cWlwZHlkaHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI2MTYxMzksImV4cCI6MjA2ODE5MjEzOX0.CpUCA3X4bNIjOCtxrdOZ2kciXEHEogukBie9IOlHpno',
+    {
+      global: {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    }
+  );
 
   const form = document.getElementById('uploadForm');
   const submitBtn = form.querySelector('button[type="submit"]');
@@ -31,8 +46,11 @@ const supabase = createClient(
       return;
     }
 
-    const filePath = `public/${Date.now()}-${file.name}`;
-    const { data: fileData, error: uploadError } = await supabase.storage
+    // Sanitize file name
+    const safeName = file.name.replace(/[^\w.-]/g, '_');
+    const filePath = `public/${Date.now()}-${safeName}`;
+
+    const { data: fileData, error: uploadError } = await supabaseWithAuth.storage
       .from('dish-images')
       .upload(filePath, file, { upsert: true });
 
@@ -42,11 +60,11 @@ const supabase = createClient(
       return;
     }
 
-    const imageUrl = supabase.storage
+    const imageUrl = supabaseWithAuth.storage
       .from('dish-images')
       .getPublicUrl(filePath).publicUrl;
 
-    const { error: dbError } = await supabase
+    const { error: dbError } = await supabaseWithAuth
       .from('foods')
       .insert([{
         name: data.get('name'),
