@@ -1,46 +1,79 @@
-// src/js/upload.js
 import { createClient } from 'https://esm.sh/@supabase/supabase-js';
 
 const supabase = createClient(
   'https://roqikwfaenwqipdydhwv.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJvcWlrd2ZhZW53cWlwZHlkaHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI2MTYxMzksImV4cCI6MjA2ODE5MjEzOX0.CpUCA3X4bNIjOCtxrdOZ2kciXEHEogukBie9IOlHpno'
+  'your-anon-key-here' // Keep this secured later
 );
 
 const form = document.getElementById('uploadForm');
+const submitBtn = form.querySelector('button[type="submit"]');
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
+  submitBtn.disabled = true;
+
   const data = new FormData(form);
   const file = data.get('image');
 
-    const user_id = localStorage.getItem('user_id');
-  if (!user_id) {
-    alert("Please sign in with Google before uploading.");
+  if (!file || file.size === 0) {
+    showError("Please choose an image to upload.");
+    submitBtn.disabled = false;
     return;
   }
-  // Upload file to bucket
+
+  const user_id = localStorage.getItem('user_id');
+  if (!user_id) {
+    showError("Please sign in with Google before uploading.");
+    submitBtn.disabled = false;
+    return;
+  }
+
+  const filePath = `public/${Date.now()}-${file.name}`;
   const { data: fileData, error: uploadError } = await supabase.storage
     .from('dish-images')
-    .upload(`public/${file.name}`, file, { upsert: true });
+    .upload(filePath, file, { upsert: true });
 
-  if (uploadError) return console.error(uploadError);
+  if (uploadError) {
+    showError(`Upload failed: ${uploadError.message}`);
+    submitBtn.disabled = false;
+    return;
+  }
 
   const imageUrl = supabase.storage
     .from('dish-images')
-    .getPublicUrl(`public/${file.name}`).publicUrl;
+    .getPublicUrl(filePath).publicUrl;
 
-  // Save metadata
   const { error: dbError } = await supabase
-  .from('foods')
-  .insert([{
-    name: data.get('name'),
-    description: data.get('description'),
-    price: parseFloat(data.get('price')),
-    image_url: imageUrl,
-    uploader_id: user_id || null
-  }]);
+    .from('foods')
+    .insert([{
+      name: data.get('name'),
+      description: data.get('description'),
+      price: parseFloat(data.get('price')),
+      image_url: imageUrl,
+      uploader_id: user_id
+    }]);
 
+  if (dbError) {
+    showError(`Insert failed: ${dbError.message}`);
+    submitBtn.disabled = false;
+    return;
+  }
 
-  if (dbError) return console.error(dbError);
-  alert('Dish uploaded successfully!');
+  showSuccess("Dish uploaded successfully!");
+  form.reset();
+  submitBtn.disabled = false;
+
+  // Optional redirect:
+  // window.location.href = "menu.html";
 });
+
+// Helper functions
+function showError(msg) {
+  alert(msg);
+  console.error(msg);
+}
+
+function showSuccess(msg) {
+  alert(msg);
+  console.log(msg);
+}
