@@ -13,7 +13,7 @@ if (error || !userData?.user) {
   return;
 }
 
-const token = userData.user.access_token || (await supabase.auth.getSession()).data?.session?.access_token;
+const token = (await supabase.auth.getSession()).data.session.access_token;
 
 
   const supabaseWithToken = createClient(
