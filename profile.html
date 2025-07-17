@@ -15,6 +15,23 @@
   <h2>Welcome to Foodneario</h2>
   <p id="userInfo">Checking login status...</p>
   <div id="profileActions"></div>
+  <script type="module">
+  import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+  const supabase = createClient(
+    "https://roqikwfaenwqipdydhwv.supabase.co",
+    "your-anon-key"
+  );
+
+  const { data: userData } = await supabase.auth.getUser();
+  if (userData?.user?.email) {
+    const btn = document.createElement("button");
+    btn.textContent = `Continue as ${userData.user.email}`;
+    btn.onclick = () => window.location.href = "profile.html";
+    document.body.appendChild(btn);
+  }
+</script>
+
 
   <script type="module" src="src/js/profile.js"></script>
 </body>
