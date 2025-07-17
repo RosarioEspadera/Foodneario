@@ -22,7 +22,7 @@ export function handleCredentialResponse(response) {
     localStorage.setItem("token", token);
 
     // Redirect after successful login
-    window.location.href = "https://rosarioespadera.github.io/Foodneario/upload.html";
+    window.location.href = "https://rosarioespadera.github.io/Foodneario/profile.html";
   } catch (err) {
     console.error("JWT parsing failed:", err);
     alert("Login failed. Please try again.");
