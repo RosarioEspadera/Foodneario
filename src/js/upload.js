@@ -6,28 +6,14 @@ const supabase = createClient(
 );
 
 (async () => {
-const { data: userData, error } = await supabase.auth.getUser();
-const uploader_id = userData?.user?.id;
+  const { data: userData, error } = await supabase.auth.getUser();
 
-if (error || !userData?.user) {
-  alert("You're not signed in.");
-  return;
-}
+  if (error || !userData?.user) {
+    alert("You're not signed in.");
+    return;
+  }
 
-const token = (await supabase.auth.getSession()).data.session.access_token;
-
-
-  const supabaseWithToken = createClient(
-    'https://roqikwfaenwqipdydhwv.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJvcWlrd2ZhZW53cWlwZHlkaHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI2MTYxMzksImV4cCI6MjA2ODE5MjEzOX0.CpUCA3X4bNIjOCtxrdOZ2kciXEHEogukBie9IOlHpno',
-    {
-      global: {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    }
-  );
+  const uploader_id = userData.user.id;
 
   const form = document.getElementById('uploadForm');
   const submitBtn = form.querySelector('button[type="submit"]');
@@ -45,15 +31,8 @@ const token = (await supabase.auth.getSession()).data.session.access_token;
       return;
     }
 
-    const user_id = localStorage.getItem('user_id');
-    if (!user_id) {
-      showError("Please sign in with Google before uploading.");
-      submitBtn.disabled = false;
-      return;
-    }
-
     const filePath = `public/${Date.now()}-${file.name}`;
-    const { data: fileData, error: uploadError } = await supabaseWithToken.storage
+    const { data: fileData, error: uploadError } = await supabase.storage
       .from('dish-images')
       .upload(filePath, file, { upsert: true });
 
@@ -63,20 +42,19 @@ const token = (await supabase.auth.getSession()).data.session.access_token;
       return;
     }
 
-    const imageUrl = supabaseWithToken.storage
+    const imageUrl = supabase.storage
       .from('dish-images')
       .getPublicUrl(filePath).publicUrl;
 
-   const { error: dbError } = await supabaseWithToken
-  .from('foods')
-  .insert([{
-    name: data.get('name'),
-    description: data.get('description'),
-    price: parseFloat(data.get('price')),
-    image_url: imageUrl,
-    uploader_id: uploader_id
-  }]);
-
+    const { error: dbError } = await supabase
+      .from('foods')
+      .insert([{
+        name: data.get('name'),
+        description: data.get('description'),
+        price: parseFloat(data.get('price')),
+        image_url: imageUrl,
+        uploader_id: uploader_id
+      }]);
 
     if (dbError) {
       showError(`Insert failed: ${dbError.message}`);
