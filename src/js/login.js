@@ -1,41 +1,17 @@
-function parseJwt(token) {
-  try {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(
-      atob(base64).split('').map((c) =>
-        '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-      ).join('')
-    );
-    return JSON.parse(jsonPayload);
-  } catch (err) {
-    console.error("JWT parsing failed:", err);
-    return null;
-  }
-}
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-function greetUser(email) {
-  const greeting = document.createElement("p");
-  greeting.textContent = `Welcome back, ${email}!`;
-  const loginSection = document.getElementById("loginSection") || document.body;
-  loginSection.insertBefore(greeting, loginSection.firstChild);
-}
+// Initialize Supabase client with anon key
+const supabase = createClient(
+  "https://roqikwfaenwqipdydhwv.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJvcWlrd2ZhZW53cWlwZHlkaHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI2MTYxMzksImV4cCI6MjA2ODE5MjEzOX0.CpUCA3X4bNIjOCtxrdOZ2kciXEHEogukBie9IOlHpno"
+);
 
-export function handleCredentialResponse(response) {
-  const token = response.credential;
-  const userInfo = parseJwt(token);
-
-  if (!userInfo || !userInfo.email || !userInfo.sub) {
-    alert("Login failed. Invalid token structure.");
-    return;
-  }
-
-  localStorage.setItem("user_id", userInfo.sub);
-  localStorage.setItem("user_email", userInfo.email);
-  localStorage.setItem("token", token);
-
-  greetUser(userInfo.email);
-
-  // Redirect after successful login
-  window.location.href = "https://rosarioespadera.github.io/Foodneario/profile.html";
-}
+// Trigger Supabase Google login flow
+document.getElementById("loginBtn").addEventListener("click", async () => {
+  await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: "https://rosarioespadera.github.io/Foodneario/profile.html"
+    }
+  });
+});
