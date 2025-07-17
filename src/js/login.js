@@ -13,9 +13,11 @@ export function handleCredentialResponse(response) {
   const token = response.credential;
   const userInfo = parseJwt(token);
 
-  localStorage.setItem('user_id', userInfo.sub);       // Google's unique user ID
-  localStorage.setItem('user_email', userInfo.email);  // optional: user email
-  localStorage.setItem('token', token);                // save the JWT itself
+  localStorage.setItem("user_id", userInfo.sub);
+  localStorage.setItem("user_email", userInfo.email);
+  localStorage.setItem("token", token);
+
+  // Redirect to upload page
+  window.location.href = "upload.html";
 }
 
-window.handleCredentialResponse = handleCredentialResponse;
