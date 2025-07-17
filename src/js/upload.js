@@ -6,14 +6,15 @@ const supabase = createClient(
 );
 
 (async () => {
-  const { data, error } = await supabase.auth.getSession();
+ const { data: userData, error } = await supabase.auth.getUser();
 
-  if (error || !data.session) {
-    alert("You're not signed in.");
-    return;
-  }
+if (error || !userData?.user) {
+  alert("You're not signed in.");
+  return;
+}
 
-  const token = data.session.access_token;
+const token = userData.user.access_token || (await supabase.auth.getSession()).data?.session?.access_token;
+
 
   const supabaseWithToken = createClient(
     'https://roqikwfaenwqipdydhwv.supabase.co',
