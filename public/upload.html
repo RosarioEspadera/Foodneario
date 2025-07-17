@@ -1,0 +1,21 @@
+<!-- public/upload.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Upload Your Dish | Foodneerio</title>
+  <link rel="stylesheet" href="../src/css/styles.css" />
+</head>
+<body>
+  <h2>Share Your Dish</h2>
+  <form id="uploadForm">
+    <input type="text" name="name" placeholder="Dish Name" required />
+    <input type="number" name="price" placeholder="Price (₱)" required />
+    <textarea name="description" placeholder="Description" required></textarea>
+    <input type="file" name="image" accept="image/*" required />
+    <button type="submit">Upload Dish</button>
+  </form>
+
+  <script type="module" src="../src/js/upload.js"></script>
+</body>
+</html>
