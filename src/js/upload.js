@@ -6,7 +6,7 @@ const supabase = createClient(
 );
 
 (async () => {
-const { data: userData } = await supabase.auth.getUser();
+const { data: userData, error } = await supabase.auth.getUser();
 const uploader_id = userData?.user?.id;
 
 if (error || !userData?.user) {
