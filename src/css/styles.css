@@ -46,3 +46,6 @@ form, #menuGrid {
   max-width: 100%;
   height: auto;
 }
+@media (forced-colors: active) {
+  /* Accessible styling here */
+}
