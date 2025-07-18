@@ -14,19 +14,16 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   }
 
   const uploader_id = userData.user.id;
+  console.log("✅ Signed-in user ID:", uploader_id);
 
   // Get the session token
   const { data: sessionData } = await supabase.auth.getSession();
   const token = sessionData?.session?.access_token;
+  console.log("✅ Session token:", token);
 
-  // Create an authenticated client
-  const supabaseWithAuth = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    global: {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    },
-  });
+  if (token) {
+    supabase.auth.setAuth(token); // ✅ Ensures RLS sees the user
+  }
 
   const form = document.getElementById('uploadForm');
   const submitBtn = form.querySelector('button[type="submit"]');
@@ -46,9 +43,10 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const safeName = file.name.replace(/[^\w.-]/g, '_');
     const filePath = `public/${Date.now()}-${safeName}`;
+    console.log("📦 Uploading file to:", filePath);
 
     // Upload image to Supabase Storage
-    const { data: fileData, error: uploadError } = await supabaseWithAuth.storage
+    const { data: fileData, error: uploadError } = await supabase.storage
       .from('dish-images')
       .upload(filePath, file, { upsert: true });
 
@@ -58,12 +56,14 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       return;
     }
 
-    const imageUrl = supabaseWithAuth.storage
+    const imageUrl = supabase.storage
       .from('dish-images')
       .getPublicUrl(filePath).publicUrl;
 
+    console.log("🖼️ Image URL:", imageUrl);
+
     // Insert dish into foods table
-    const { error: dbError } = await supabaseWithAuth
+    const { error: dbError } = await supabase
       .from('foods')
       .insert([{
         name: data.get('name'),
@@ -88,10 +88,10 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // Helper functions
 function showError(msg) {
   alert(msg);
-  console.error(msg);
+  console.error("❌", msg);
 }
 
 function showSuccess(msg) {
   alert(msg);
-  console.log(msg);
+  console.log("✅", msg);
 }
