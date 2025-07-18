@@ -1,7 +1,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js';
 
 const SUPABASE_URL = 'https://roqikwfaenwqipdydhwv.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJvcWlrd2ZhZW53cWlwZHlkaHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI2MTYxMzksImV4cCI6MjA2ODE5MjEzOX0.CpUCA3X4bNIjOCtxrdOZ2kciXEHEogukBie9IOlHpno'; // truncated
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // truncated
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -35,10 +35,10 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const safeName = file.name.replace(/[^\w.-]/g, '_');
     const filePath = `public/${Date.now()}-${safeName}`;
     console.log("📦 Uploading file:", {
-  name: file.name,
-  type: file.type,
-  size: file.size
-});
+      name: file.name,
+      type: file.type,
+      size: file.size
+    });
 
     // Upload image to Supabase Storage
     const { data: fileData, error: uploadError } = await supabase.storage
@@ -47,6 +47,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     if (uploadError) {
       showError(`Upload failed: ${uploadError.message}`);
+      console.error("❌ Storage error details:", uploadError);
       submitBtn.disabled = false;
       return;
     }
@@ -70,6 +71,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     if (dbError) {
       showError(`Insert failed: ${dbError.message}`);
+      console.error("❌ DB error details:", dbError);
       submitBtn.disabled = false;
       return;
     }
@@ -90,3 +92,4 @@ function showSuccess(msg) {
   alert(msg);
   console.log("✅", msg);
 }
+
