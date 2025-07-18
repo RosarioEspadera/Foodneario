@@ -34,7 +34,11 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const safeName = file.name.replace(/[^\w.-]/g, '_');
     const filePath = `public/${Date.now()}-${safeName}`;
-    console.log("📦 Uploading file to:", filePath);
+    console.log("📦 Uploading file:", {
+  name: file.name,
+  type: file.type,
+  size: file.size
+});
 
     // Upload image to Supabase Storage
     const { data: fileData, error: uploadError } = await supabase.storage
