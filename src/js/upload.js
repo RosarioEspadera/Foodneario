@@ -1,22 +1,25 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js';
 
 const SUPABASE_URL = 'https://roqikwfaenwqipdydhwv.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJvcWlrd2ZhZW53cWlwZHlkaHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI2MTYxMzksImV4cCI6MjA2ODE5MjEzOX0.CpUCA3X4bNIjOCtxrdOZ2kciXEHEogukBie9IOlHpno';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJvcWlrd2ZhZW53cWlwZHlkaHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI2MTYxMzksImV4cCI6MjA2ODE5MjEzOX0.CpUCA3X4bNIjOCtxrdOZ2kciXEHEogukBie9IOlHpno'; // truncated for clarity
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 (async () => {
-  const { data: userData, error } = await supabase.auth.getUser();
-  if (error || !userData?.user) {
-    alert("You're not signed in.");
+  // Get the signed-in user
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+  if (userError || !userData?.user) {
+    showError("You're not signed in.");
     return;
   }
 
   const uploader_id = userData.user.id;
 
+  // Get the session token
   const { data: sessionData } = await supabase.auth.getSession();
   const token = sessionData?.session?.access_token;
 
+  // Create an authenticated client
   const supabaseWithAuth = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     global: {
       headers: {
@@ -44,6 +47,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const safeName = file.name.replace(/[^\w.-]/g, '_');
     const filePath = `public/${Date.now()}-${safeName}`;
 
+    // Upload image to Supabase Storage
     const { data: fileData, error: uploadError } = await supabaseWithAuth.storage
       .from('dish-images')
       .upload(filePath, file, { upsert: true });
@@ -58,6 +62,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       .from('dish-images')
       .getPublicUrl(filePath).publicUrl;
 
+    // Insert dish into foods table
     const { error: dbError } = await supabaseWithAuth
       .from('foods')
       .insert([{
